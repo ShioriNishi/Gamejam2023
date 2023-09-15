@@ -13,7 +13,7 @@ public class RemainingTimeManager : MonoBehaviour
     void Start()
     {
         m_remainingTime = 60.0f;
-        m_remainingTimeText.text = m_remainingTime.ToString();
+        m_remainingTimeText.text = m_remainingTime.ToString("F0");
     }
 
     // Update is called once per frame
@@ -22,7 +22,7 @@ public class RemainingTimeManager : MonoBehaviour
         m_remainingTime -= Time.deltaTime;
         if (m_remainingTime > 0)
         {
-            m_remainingTimeText.text = m_remainingTime.ToString();
+            m_remainingTimeText.text = m_remainingTime.ToString("F0");
         }
         else
         {
