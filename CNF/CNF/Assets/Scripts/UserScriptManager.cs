@@ -8,6 +8,9 @@ public class UserScriptManager : MonoBehaviour
 	[SerializeField]
 	private TextAsset m_textFile;
 
+	[SerializeField]
+	private Entity_confression_master m_confressionMasterDao;
+
 	/// <summary>•¶Í’†‚Ì•¶‚ğ“ü‚ê‚Ä‚¨‚­‚½‚ß‚ÌƒŠƒXƒg</summary>
 	private List<string> m_sentences = new List<string>();
 
@@ -40,7 +43,8 @@ public class UserScriptManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
 	{
-		
+		string testText = m_confressionMasterDao.param.Find(cnfMaster => cnfMaster.id == 1).villager_confression_text;
+		Debug.Log(testText);
 	}
 
 	// Update is called once per frame
