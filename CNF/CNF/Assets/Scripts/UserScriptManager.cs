@@ -43,8 +43,8 @@ public class UserScriptManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
 	{
-		string testText = m_confressionMasterDao.param.Find(cnfMaster => cnfMaster.id == 1).villager_confression_text;
-		Debug.Log(testText);
+		Entity_confression_master.Param testData = m_confressionMasterDao.param.Find(cnfMaster => cnfMaster.id == m_confressionMasterDao.param.Count);
+		Debug.Log(testData.villager_confression_text);
 	}
 
 	// Update is called once per frame

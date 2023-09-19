@@ -38,7 +38,7 @@ public class MainTextController : MonoBehaviour
     /// </summary>
     public void DisplayText()
     {
-        string sentence = GameSystemManager.Instance.userScriptManager.GetCurrentSentence();
+        string sentence = GameSystemManager.Instance.userScriptManager.GetCurrentSentence();    // ‚±‚±‚ðDB•¶Œ¾‚É•Ï‚¦‚é
         m_mainTextObject.text = sentence;
     }    
 
@@ -81,8 +81,8 @@ public class MainTextController : MonoBehaviour
             {
                 m_displayedSentenceLength = m_sentenceLength;
             }
-
         }
+
     }
 
 }
