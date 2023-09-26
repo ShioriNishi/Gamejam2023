@@ -15,9 +15,9 @@ public class GameSystemManager : MonoBehaviour
 	private int m_lineNumber;
 
 	public void AddLineNumber(int add = 1)
-    {
-        if (LineNumber < userScriptManager.GetMaxSentenceCount() - 1)
-        {
+	{
+		if (LineNumber < userScriptManager.GetMaxSentenceCount() - 1)
+		{
 			LineNumber += add;
 		}
 	}

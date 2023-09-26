@@ -18,30 +18,30 @@ public class UserScriptManager : MonoBehaviour
 	/// <summary>現在の行の文を取得する</summary>
 	/// <returns>string型。現在の行の文</returns>
 	public string GetCurrentSentence()
-    {
+	{
 		return m_sentences[GameSystemManager.Instance.LineNumber];
-    }
+	}
 
 	/// <summary>テキストの最大行を取得する</summary>
 	/// <returns>int型。最大行数</returns>
 	public int GetMaxSentenceCount()
-    {
+	{
 		return m_sentences.Count;
-    }
+	}
 
-    private void Awake()
-    {
+	private void Awake()
+	{
 		// テキストファイルの中身を、1行ずつリストに入れておく
 		StringReader reader = new StringReader(m_textFile.text);
-        while (reader.Peek() != -1)
-        {
+		while (reader.Peek() != -1)
+		{
 			string line = reader.ReadLine();
 			m_sentences.Add(line);
-        }
-    }
+		}
+	}
 
-    // Start is called before the first frame update
-    void Start()
+	// Start is called before the first frame update
+	void Start()
 	{
 		Entity_confression_master.Param testData = m_confressionMasterDao.param.Find(cnfMaster => cnfMaster.id == m_confressionMasterDao.param.Count);
 		Debug.Log(testData.villager_confression_text);

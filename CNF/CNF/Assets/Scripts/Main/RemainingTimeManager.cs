@@ -5,29 +5,29 @@ using TMPro;
 
 public class RemainingTimeManager : MonoBehaviour
 {
-    [SerializeField]
-    private TextMeshProUGUI m_remainingTimeText;
-    private float m_remainingTime;
+	[SerializeField]
+	private TextMeshProUGUI m_remainingTimeText;
+	private float m_remainingTime;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        m_remainingTime = 60.0f;
-        m_remainingTimeText.text = m_remainingTime.ToString("F0");
-    }
+	// Start is called before the first frame update
+	void Start()
+	{
+		m_remainingTime = 60.0f;
+		m_remainingTimeText.text = m_remainingTime.ToString("F0");
+	}
 
-    // Update is called once per frame
-    void Update()
-    {
-        m_remainingTime -= Time.deltaTime;
-        if (m_remainingTime > 0)
-        {
-            m_remainingTimeText.text = m_remainingTime.ToString("F0");
-        }
-        else
-        {
-            m_remainingTimeText.text = "0";
-        }
+	// Update is called once per frame
+	void Update()
+	{
+		m_remainingTime -= Time.deltaTime;
+		if (m_remainingTime > 0)
+		{
+			m_remainingTimeText.text = m_remainingTime.ToString("F0");
+		}
+		else
+		{
+			m_remainingTimeText.text = "0";
+		}
 
-    }
+	}
 }
