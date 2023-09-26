@@ -3,7 +3,18 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 public class ChangeScene : MonoBehaviour
-{
+
+{Button btn;
+ 
+    void Start () {
+        btn = GetComponent<Button>();
+    }
+ 
+    public void OneClick() {
+        btn.interactable = false;
+    }
+
+
     [SerializeField] private Image _PanelImage;
     [SerializeField] private float _speed;
     private bool isSceneChange;
@@ -21,7 +32,7 @@ public class ChangeScene : MonoBehaviour
     {
         while (!isSceneChange)
         {
-            PanelColor.a += 0.01f;
+            PanelColor.a += 0.003f;
             _PanelImage.color = PanelColor;
             if (PanelColor.a >= 1)
                 isSceneChange = true;
