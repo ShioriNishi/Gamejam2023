@@ -33,9 +33,12 @@ public class ConfressionManager : MonoBehaviour
 	/// <summary>混沌ポイント：深淵を覗く回答をしたときに貯まるポイント</summary>
 	private int m_chaosPoint = 0;
 
+	/// <summary>現在出題中の懺悔マスタパラメーター</summary>
 	private Entity_confression_master.Param m_confressionMasterParam;
-	private List<int> m_unselectedIdList;
-	private int m_nowConfressionId;
+	/// <summary>未出題中の懺悔マスタIDリスト</summary>
+	private List<int> m_unansweredIdList;
+	/// <summary>現在出題中の懺悔マスタID</summary>
+	private int m_currentConfressionId;
 
 	// ------------------------------
 	// public
@@ -49,6 +52,7 @@ public class ConfressionManager : MonoBehaviour
 
 		// シスター回答文言表示
 		m_sisterAnswerObject.transform.Find("SisterAnswerText").GetComponent<TextMeshProUGUI>().text = m_confressionMasterParam.sister_admonish_text;
+		m_sisterAnswerObject.SetActive(true);
 	}
 	/// <summary>同調ボタン押下時の処理</summary>
 	public void OnClickEmpathizeButton()
@@ -59,6 +63,7 @@ public class ConfressionManager : MonoBehaviour
 
 		// シスター回答文言表示
 		m_sisterAnswerObject.transform.Find("SisterAnswerText").GetComponent<TextMeshProUGUI>().text = m_confressionMasterParam.sister_empathize_text;
+		m_sisterAnswerObject.SetActive(true);
 	}
 
 	#endregion public
@@ -69,21 +74,21 @@ public class ConfressionManager : MonoBehaviour
 	private void Start()
 	{
 		// 初期化処理
-		m_nowConfressionId = 0;
+		m_currentConfressionId = 0;
 		m_orthodoxPoint = 0;
 		m_unorthodoxPoint = 0;
 		m_chaosPoint = 0;
 
 
 		// リストの初期化
-		m_unselectedIdList = new List<int>();
+		m_unansweredIdList = new List<int>();
 		foreach (Entity_confression_master.Param confressionParam in m_confressionMasterDao.param)
 		{
-			m_unselectedIdList.Add(confressionParam.id);
+			m_unansweredIdList.Add(confressionParam.id);
 		}
 
 		// 最初のマスタを決める処理
-		SetNowConfressionId();
+		LotteryCurrentConfressionId();
 
 		// 文言を抽出する処理
 
@@ -116,10 +121,14 @@ public class ConfressionManager : MonoBehaviour
 	}
 
 	/// <summary>現在の懺悔マスタIDを決める処理</summary>
-	private void SetNowConfressionId()
+	private void LotteryCurrentConfressionId()
 	{
-		m_nowConfressionId = UnityEngine.Random.Range(1, m_unselectedIdList.Count);
+		m_currentConfressionId = UnityEngine.Random.Range(1, m_unansweredIdList.Count);
+		m_confressionMasterParam = m_confressionMasterDao.param.Find(cfnMaster => cfnMaster.id == m_currentConfressionId);
+
 		// 該当のマスタをリストから削除する処理を追加すること（ランダム重複を防ぎたい）
+		m_unansweredIdList.Remove(m_currentConfressionId);
+
 	}
 	#endregion private
 }
