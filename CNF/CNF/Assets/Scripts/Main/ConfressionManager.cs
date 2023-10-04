@@ -53,6 +53,9 @@ public class ConfressionManager : MonoBehaviour
 		// シスター回答文言表示
 		m_sisterAnswerObject.transform.Find("SisterAnswerText").GetComponent<TextMeshProUGUI>().text = m_confressionMasterParam.sister_admonish_text;
 		m_sisterAnswerObject.SetActive(true);
+		m_sisterThinkingObject.SetActive(false);
+
+		//Invoke()
 	}
 	/// <summary>同調ボタン押下時の処理</summary>
 	public void OnClickEmpathizeButton()
@@ -64,6 +67,7 @@ public class ConfressionManager : MonoBehaviour
 		// シスター回答文言表示
 		m_sisterAnswerObject.transform.Find("SisterAnswerText").GetComponent<TextMeshProUGUI>().text = m_confressionMasterParam.sister_empathize_text;
 		m_sisterAnswerObject.SetActive(true);
+		m_sisterThinkingObject.SetActive(false);
 	}
 
 	#endregion public
@@ -78,6 +82,7 @@ public class ConfressionManager : MonoBehaviour
 		m_orthodoxPoint = 0;
 		m_unorthodoxPoint = 0;
 		m_chaosPoint = 0;
+		m_sisterAnswerObject.SetActive(false);
 
 
 		// リストの初期化
@@ -91,7 +96,7 @@ public class ConfressionManager : MonoBehaviour
 		LotteryCurrentConfressionId();
 
 		// 文言を抽出する処理
-
+		m_villagerConfressionText.text = m_confressionMasterParam.villager_confression_text;
 	}
 
 	// Update is called once per frame
@@ -130,5 +135,15 @@ public class ConfressionManager : MonoBehaviour
 		m_unansweredIdList.Remove(m_currentConfressionId);
 
 	}
+
+	private void ViewVillagerAdmonishReaction()
+    {
+
+    }
+
+	private void ViewVillagerEmpathizeReaction()
+    {
+
+    }
 	#endregion private
 }
