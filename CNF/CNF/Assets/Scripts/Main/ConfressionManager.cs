@@ -15,8 +15,12 @@ public class ConfressionManager : MonoBehaviour
 	private GameObject m_sisterThinkingObject;
 	[SerializeField, Tooltip("シスター回答テキストオブジェクト")]
 	private GameObject m_sisterAnswerObject;
-	[SerializeField, Tooltip("村民返答テキストオブジェクト")]
-	private GameObject m_villagerReactionObject;
+	[SerializeField, Tooltip("村民正統派返答テキストオブジェクト")]
+	private GameObject m_villagerOrthodoxReactionObject;
+	[SerializeField, Tooltip("村民非正統派返答テキストオブジェクト")]
+	private GameObject m_villagerUnorthodoxReactionObject;
+	[SerializeField, Tooltip("村民混沌派返答テキストオブジェクト")]
+	private GameObject m_villagerChaosReactionObject;
 
 	[SerializeField, Tooltip("諫めるボタン")]
 	private Button m_admonishButton;
@@ -52,11 +56,11 @@ public class ConfressionManager : MonoBehaviour
 
 		// シスター回答文言表示
 		m_sisterAnswerObject.transform.Find("SisterAnswerText").GetComponent<TextMeshProUGUI>().text = m_confressionMasterParam.sister_admonish_text;
-		m_sisterAnswerObject.SetActive(true);
-		m_sisterThinkingObject.SetActive(false);
+		ChangeViewTextUI(ViewUIType.SisterAdmonish);
 
-		//Invoke()
-	}
+		// 村人反応を表示する（3秒後）
+		Invoke("ViewVillagerAdmonishReaction", 3.0f);
+    }
 	/// <summary>同調ボタン押下時の処理</summary>
 	public void OnClickEmpathizeButton()
 	{
@@ -66,8 +70,10 @@ public class ConfressionManager : MonoBehaviour
 
 		// シスター回答文言表示
 		m_sisterAnswerObject.transform.Find("SisterAnswerText").GetComponent<TextMeshProUGUI>().text = m_confressionMasterParam.sister_empathize_text;
-		m_sisterAnswerObject.SetActive(true);
-		m_sisterThinkingObject.SetActive(false);
+		ChangeViewTextUI(ViewUIType.SisterEmpathize);
+
+		// 村人反応を表示する（3秒後）
+		Invoke("ViewVillagerEmpathizeReaction", 3.0f);
 	}
 
 	#endregion public
@@ -77,13 +83,14 @@ public class ConfressionManager : MonoBehaviour
 	// Start is called before the first frame update
 	private void Start()
 	{
-		// 初期化処理
+		// 変数初期化処理
 		m_currentConfressionId = 0;
 		m_orthodoxPoint = 0;
 		m_unorthodoxPoint = 0;
 		m_chaosPoint = 0;
-		m_sisterAnswerObject.SetActive(false);
 
+		// オブジェクトのアクティブを初期状態にする
+		ChangeViewTextUI(ViewUIType.GameStart);
 
 		// リストの初期化
 		m_unansweredIdList = new List<int>();
@@ -97,12 +104,15 @@ public class ConfressionManager : MonoBehaviour
 
 		// 文言を抽出する処理
 		m_villagerConfressionText.text = m_confressionMasterParam.villager_confression_text;
+
+		// 懺悔開始状態にする
+		ChangeViewTextUI(ViewUIType.ConfressionStart);
 	}
 
 	// Update is called once per frame
 	private void Update()
 	{
-		
+		// Pointの描画（Updateでやると重いか？）
 	}
 
 	/// <summary>引数を元にポイントに加算する処理</summary>
@@ -125,6 +135,65 @@ public class ConfressionManager : MonoBehaviour
 		}
 	}
 
+	/// <summary>定数で指定された種類に合わせて表示するTextUIを変える処理</summary>
+	private void ChangeViewTextUI(ViewUIType viewUIType)
+	{
+		switch (viewUIType)
+		{
+			case ViewUIType.GameStart:					// ゲーム開始（初期化時）
+				m_sisterThinkingObject.SetActive(false);
+				m_sisterAnswerObject.SetActive(false);
+				m_villagerOrthodoxReactionObject.SetActive(false);
+				m_villagerUnorthodoxReactionObject.SetActive(false);
+				m_villagerChaosReactionObject.SetActive(false);
+				break;
+
+			case ViewUIType.ConfressionStart:           // 懺悔開始時
+				m_sisterThinkingObject.SetActive(true);	// なんと答えよう・・・は出す
+				m_sisterAnswerObject.SetActive(false);
+				m_villagerOrthodoxReactionObject.SetActive(false);
+				m_villagerUnorthodoxReactionObject.SetActive(false);
+				m_villagerChaosReactionObject.SetActive(false);
+				break;
+
+			case ViewUIType.SisterAdmonish:				// シスター諫める		// シスター回答自体はどのパターンでも演出一緒
+			case ViewUIType.SisterEmpathize:			// シスター同調
+				m_sisterThinkingObject.SetActive(false);
+				m_sisterAnswerObject.SetActive(true);
+				m_villagerOrthodoxReactionObject.SetActive(false);
+				m_villagerUnorthodoxReactionObject.SetActive(false);
+				m_villagerChaosReactionObject.SetActive(false);
+				break;
+
+			case ViewUIType.VillagerOrthodoxReaction:   // 村民正統派反応
+				m_sisterThinkingObject.SetActive(false);
+				m_sisterAnswerObject.SetActive(true);
+				m_villagerOrthodoxReactionObject.SetActive(true);	// 正統派反応の吹き出しを表示する
+				m_villagerUnorthodoxReactionObject.SetActive(false);
+				m_villagerChaosReactionObject.SetActive(false);
+				break;
+   
+			case ViewUIType.VillagerUnorthodoxReaction:	// 村民非正統派反応
+				m_sisterThinkingObject.SetActive(false);
+				m_sisterAnswerObject.SetActive(true);
+				m_villagerOrthodoxReactionObject.SetActive(false);
+				m_villagerUnorthodoxReactionObject.SetActive(true);	// 非正統派反応の吹き出しを表示する
+				m_villagerChaosReactionObject.SetActive(false);
+				break;
+
+			case ViewUIType.VillagerChaosReaction:		// 村民混沌派反応
+				m_sisterThinkingObject.SetActive(false);
+				m_sisterAnswerObject.SetActive(true);
+				m_villagerOrthodoxReactionObject.SetActive(false);
+				m_villagerUnorthodoxReactionObject.SetActive(false);
+				m_villagerChaosReactionObject.SetActive(true);	// 混沌派反応の吹き出しを表示する
+				break;
+
+			default:
+				break;
+		}
+	}
+
 	/// <summary>現在の懺悔マスタIDを決める処理</summary>
 	private void LotteryCurrentConfressionId()
 	{
@@ -136,13 +205,66 @@ public class ConfressionManager : MonoBehaviour
 
 	}
 
+	/// <summary>「諫める」に対する村民の反応を表示する</summary>
 	private void ViewVillagerAdmonishReaction()
-    {
+	{
+		// 回答結果の反映ポイント種別を抽出する
+		PointType admonishPointType = (PointType)m_confressionMasterParam.admonish_point_type;
 
+		// UIをポイント種別に合わせて出し分ける
+        switch (admonishPointType)
+        {
+            case PointType.Orthodox:	// 諫めるが正統派回答だった場合
+				m_villagerOrthodoxReactionObject.transform.Find("VillagerReactionText").GetComponent<TextMeshProUGUI>().text = m_confressionMasterParam.villager_admonish_text;
+				ChangeViewTextUI(ViewUIType.VillagerOrthodoxReaction);
+                break;
+
+            case PointType.Unorthodox:  // 諫めるが非正統派回答だった場合
+				m_villagerUnorthodoxReactionObject.transform.Find("VillagerReactionText").GetComponent<TextMeshProUGUI>().text = m_confressionMasterParam.villager_admonish_text;
+				ChangeViewTextUI(ViewUIType.VillagerUnorthodoxReaction);
+                break;
+
+            case PointType.Chaos:		// 諫めるが混沌派回答だった場合
+				m_villagerChaosReactionObject.transform.Find("VillagerReactionText").GetComponent<TextMeshProUGUI>().text = m_confressionMasterParam.villager_admonish_text;
+				ChangeViewTextUI(ViewUIType.VillagerChaosReaction);
+                break;
+
+            default:
+                break;
+        }
+
+        // 村民反応漫符を出す
     }
 
+	/// <summary>「同調」に対する村人の反応を表示する</summary>
 	private void ViewVillagerEmpathizeReaction()
-    {
+	{
+		// 回答結果の反映ポイント種別を抽出する
+		PointType empathizePointType = (PointType)m_confressionMasterParam.empathize_point_type;
+
+        // UIをポイント種別に合わせて出し分ける
+        switch (empathizePointType)
+        {
+            case PointType.Orthodox:    // 同調が正統派回答だった場合
+				m_villagerOrthodoxReactionObject.transform.Find("VillagerReactionText").GetComponent<TextMeshProUGUI>().text = m_confressionMasterParam.villager_empathize_text;
+				ChangeViewTextUI(ViewUIType.VillagerOrthodoxReaction);
+                break;
+
+            case PointType.Unorthodox:  // 同調が非正統派回答だった場合
+				m_villagerUnorthodoxReactionObject.transform.Find("VillagerReactionText").GetComponent<TextMeshProUGUI>().text = m_confressionMasterParam.villager_empathize_text;
+				ChangeViewTextUI(ViewUIType.VillagerUnorthodoxReaction);
+                break;
+
+            case PointType.Chaos:		// 同調が混沌派回答だった場合
+				m_villagerChaosReactionObject.transform.Find("VillagerReactionText").GetComponent<TextMeshProUGUI>().text = m_confressionMasterParam.villager_empathize_text;
+				ChangeViewTextUI(ViewUIType.VillagerChaosReaction);
+                break;
+
+            default:
+                break;
+        }
+
+        // 村民反応漫符を出す
 
     }
 	#endregion private
