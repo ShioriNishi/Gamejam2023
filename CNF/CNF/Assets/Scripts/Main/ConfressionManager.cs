@@ -133,6 +133,8 @@ public class ConfressionManager : MonoBehaviour
 				Debug.LogWarning("どこにも加算されませんでした！要確認 PointType = " + type);
 				break;
 		}
+
+		Debug.Log($"正統派ポイント = {m_orthodoxPoint} , ぐうたらポイント = {m_unorthodoxPoint} , 混沌ポイント = {m_chaosPoint}");
 	}
 
 	/// <summary>定数で指定された種類に合わせて表示するTextUIを変える処理</summary>
