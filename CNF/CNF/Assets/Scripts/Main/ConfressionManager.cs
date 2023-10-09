@@ -99,14 +99,7 @@ public class ConfressionManager : MonoBehaviour
 			m_unansweredIdList.Add(confressionParam.id);
 		}
 
-		// 最初のマスタを決める処理
-		LotteryCurrentConfressionId();
-
-		// 文言を抽出する処理
-		m_villagerConfressionText.text = m_confressionMasterParam.villager_confression_text;
-
-		// 懺悔開始状態にする
-		ChangeViewTextUI(ViewUIType.ConfressionStart);
+		NextConfression();
 	}
 
 	// Update is called once per frame
@@ -135,6 +128,7 @@ public class ConfressionManager : MonoBehaviour
 		}
 
 		Debug.Log($"正統派ポイント = {m_orthodoxPoint} , ぐうたらポイント = {m_unorthodoxPoint} , 混沌ポイント = {m_chaosPoint}");
+		// ポイントUIの更新
 	}
 
 	/// <summary>定数で指定された種類に合わせて表示するTextUIを変える処理</summary>
@@ -235,7 +229,11 @@ public class ConfressionManager : MonoBehaviour
                 break;
         }
 
-        // 村民反応漫符を出す
+		// 村民反応漫符を出す
+
+
+		// 次の懺悔を出す
+		Invoke("NextConfression", 3.0f);
     }
 
 	/// <summary>「同調」に対する村人の反応を表示する</summary>
@@ -268,6 +266,20 @@ public class ConfressionManager : MonoBehaviour
 
         // 村民反応漫符を出す
 
+        // 次の懺悔を出す
+        Invoke("NextConfression", 3.0f);
     }
-	#endregion private
+
+    private void NextConfression()
+	{
+        // 最初のマスタを決める処理
+        LotteryCurrentConfressionId();
+
+        // 文言を抽出する処理
+        m_villagerConfressionText.text = m_confressionMasterParam.villager_confression_text;
+
+        // 懺悔開始状態にする
+        ChangeViewTextUI(ViewUIType.ConfressionStart);
+    }
+    #endregion private
 }

@@ -9,6 +9,15 @@ public class RemainingTimeManager : MonoBehaviour
 	private TextMeshProUGUI m_remainingTimeText;
 	private float m_remainingTime;
 
+	/// <summary>
+	/// ŠÔØ‚ê‚É‚È‚Á‚Ä‚¢‚é‚©‚Ì”»’è
+	/// </summary>
+	/// <returns>bool ŠÔØ‚ê‚È‚çTrue</returns>
+	public bool isTimeover()
+	{
+		return m_remainingTime <= 0;
+	}
+
 	// Start is called before the first frame update
 	void Start()
 	{
