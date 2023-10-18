@@ -40,4 +40,17 @@ namespace Confression.Defines
 		/// <summary>ゲーム終了</summary>
 		GameEnd,
 	}
+
+	/// <summary>エンディング種類</summary>
+	public enum EndingType
+	{
+		/// <summary>ベストエンド</summary>
+		BestEnding = 1,
+		/// <summary>バッドエンド</summary>
+		BadEnding,
+		/// <summary>ノーマルエンド</summary>
+		NormalEnding,
+		/// <summary>狂化エンド</summary>
+		ChaosEnding,
+	}
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 // 定数用
@@ -9,6 +10,7 @@ using Confression.Defines;
 
 public class ConfressionManager : MonoBehaviour
 {
+	#region field
 	[SerializeField, Tooltip("村民懺悔テキストボックス")]
 	private TextMeshProUGUI m_villagerConfressionText;
 	[SerializeField, Tooltip("シスター考え中テキストオブジェクト")]
@@ -36,6 +38,9 @@ public class ConfressionManager : MonoBehaviour
 	[SerializeField, Tooltip("タイマーを司るクラス")]
 	private RemainingTimeManager m_remainingTimeManager;
 
+	[SerializeField, Tooltip("エンディング画面に引き渡すリザルト情報")]
+	private EndingResultSO m_endingResultSO;
+
 	/// <summary>正統派ポイント：正しい回答をしたときに貯まるポイント</summary>
 	private int m_orthodoxPoint = 0;
 	/// <summary>非正統派ポイント：間違った回答をしたときに貯まるポイント</summary>
@@ -53,6 +58,36 @@ public class ConfressionManager : MonoBehaviour
 	/// <summary>現在出題中の懺悔マスタID</summary>
 	private int m_currentConfressionId;
 
+	// ------------------------------
+	#region fade // フェード関連の関数
+	/// <summary>フェード開始時間</summary>
+	[SerializeField, Tooltip("フェード用パネル")]
+	private GameObject m_fadeObject;
+	/// <summary>フェード開始時間</summary>
+	private float m_fadeStartTime;
+	/// <summary>フェード待ち時間、何秒かけてフェードするかの時間</summary>
+	private int m_fadeDelayTime;
+	/// <summary>フェード用アルファ値</summary>
+	private Color m_fadeAlpha;
+	/// <summary>フェードの種類</summary>
+	private enum FadeMode
+	{
+		/// <summary>フェードイン</summary>
+		FadeIn = 1,
+		/// <summary>フェードアウト</summary>
+		FadeOut,
+		/// <summary>なにもしない</summary>
+		DoNothing,
+	}
+	private FadeMode m_fadeMode;
+	#endregion fade
+
+	/// <summary>シーン切り替えまでの待ち時間</summary>
+	private readonly float m_loadSceneDelayTime = 5.0f;
+	/// <summary>シーン切り替えまでの経過時間</summary>
+	private float m_loadSceneElaspedTime;
+
+	#endregion field
 	// ------------------------------
 	// public
 	#region public
@@ -92,12 +127,25 @@ public class ConfressionManager : MonoBehaviour
 	// Start is called before the first frame update
 	private void Start()
 	{
+		// フェード用変数初期化
+		m_fadeDelayTime = 5;
+		m_fadeStartTime = Time.time;
+		m_fadeMode = FadeMode.DoNothing;
+
+		// シーン遷移用変数初期化
+		m_loadSceneElaspedTime = 0.0f;
+
 		// 変数初期化処理
 		m_isFinishGame = false;
 		m_currentConfressionId = 0;
 		m_orthodoxPoint = 0;
 		m_unorthodoxPoint = 0;
 		m_chaosPoint = 0;
+
+		// EndingResultSO初期化
+		m_endingResultSO.orthodoxPoint = 0;
+		m_endingResultSO.unorthodoxPoint = 0;
+		m_endingResultSO.chaosPoint = 0;
 
 		// オブジェクトのアクティブを初期状態にする
 		ChangeViewTextUI(ViewUIType.GameStart);
@@ -115,11 +163,46 @@ public class ConfressionManager : MonoBehaviour
 	// Update is called once per frame
 	private void Update()
 	{
-		if (m_remainingTimeManager.isTimeover())
+		if (m_remainingTimeManager.isTimeover() && m_isFinishGame == false)
 		{
 			// 時間切れ演出
 			ChangeViewTextUI(ViewUIType.GameEnd);
 			m_isFinishGame = true;
+
+			// フェードモードをフェードアウトにする
+			//m_fadeMode = FadeMode.FadeOut;	// なんかしっくりこないのでFO封印中
+			m_fadeStartTime = Time.time;
+		}
+
+		// ゲーム終了フラグが立ったら、遷移処理まで指定時間待って、遷移する
+		if (m_isFinishGame == true)
+		{
+			m_loadSceneElaspedTime += Time.deltaTime;
+
+			// 指定時間経過したか？
+			if (m_loadSceneElaspedTime > m_loadSceneDelayTime)
+			{
+				LoadEnding();	// 遷移処理
+			}
+		}
+
+		// フェード処理
+		switch (m_fadeMode)
+		{
+			case FadeMode.FadeIn:
+				m_fadeAlpha.a = 1.0f - (Time.time - m_fadeStartTime) / m_fadeDelayTime;
+				m_fadeObject.transform.GetComponent<Image>().color = new Color(0, 0, 0, m_fadeAlpha.a);
+				break;
+			case FadeMode.FadeOut:
+				m_fadeAlpha.a = (Time.time - m_fadeStartTime) / m_fadeDelayTime;
+				m_fadeObject.transform.GetComponent<Image>().color = new Color(0, 0, 0, m_fadeAlpha.a);
+
+				break;
+
+			case FadeMode.DoNothing:
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -143,6 +226,11 @@ public class ConfressionManager : MonoBehaviour
 		}
 
 		Debug.Log($"正統派ポイント = {m_orthodoxPoint} , ぐうたらポイント = {m_unorthodoxPoint} , 混沌ポイント = {m_chaosPoint}");
+
+		m_endingResultSO.orthodoxPoint = m_orthodoxPoint;
+		m_endingResultSO.unorthodoxPoint = m_unorthodoxPoint;
+		m_endingResultSO.chaosPoint = m_chaosPoint;
+
 		// ポイントUIの更新
 	}
 
@@ -151,7 +239,8 @@ public class ConfressionManager : MonoBehaviour
 	{
 		switch (viewUIType)
 		{
-			case ViewUIType.GameStart:					// ゲーム開始（初期化時）
+			case ViewUIType.GameStart:                  // ゲーム開始（初期化時）
+				m_fadeObject.SetActive(false);		// フェード用パネルは隠す
 				m_finishObject.SetActive(false);		// 終了オブジェクトは隠す
 				m_sisterThinkingObject.SetActive(false);
 				m_sisterAnswerObject.SetActive(false);
@@ -166,8 +255,8 @@ public class ConfressionManager : MonoBehaviour
 				m_villagerOrthodoxReactionObject.SetActive(false);
 				m_villagerUnorthodoxReactionObject.SetActive(false);
 				m_villagerChaosReactionObject.SetActive(false);
-				m_admonishButton.interactable = true;	// ボタンは押せるようにする
-				m_empathizeButton.interactable = true;
+				//m_admonishButton.interactable = true;	// ボタンは押せるようにする
+				//m_empathizeButton.interactable = true;
 				break;
 
 			case ViewUIType.SisterAdmonish:				// シスター諫める		// シスター回答自体はどのパターンでも演出一緒
@@ -203,10 +292,11 @@ public class ConfressionManager : MonoBehaviour
 				m_villagerChaosReactionObject.SetActive(true);	// 混沌派反応の吹き出しを表示する
 				break;
 
-			case ViewUIType.GameEnd:					// ゲーム終了時（時間切れ終了）
+			case ViewUIType.GameEnd:                    // ゲーム終了時（時間切れ終了）
+				m_fadeObject.SetActive(true);		// フェード用パネルは表示する
 				m_finishObject.SetActive(true);			// 終了演出だけ表示する、他の状態は隠さない
-				m_admonishButton.interactable = false;	// ボタンは押せなくする
-				m_empathizeButton.interactable = false;
+				//m_admonishButton.interactable = false;	// ボタンは押せなくする
+				//m_empathizeButton.interactable = false;
 				break;
 
 			default:
@@ -217,12 +307,16 @@ public class ConfressionManager : MonoBehaviour
 	/// <summary>現在の懺悔マスタIDを決める処理</summary>
 	private void LotteryCurrentConfressionId()
 	{
-		m_currentConfressionId = UnityEngine.Random.Range(1, m_unansweredIdList.Count);
+		int index = Random.Range(0, m_unansweredIdList.Count);
+
+		m_currentConfressionId = m_unansweredIdList[index];
 		m_confressionMasterParam = m_confressionMasterDao.param.Find(cfnMaster => cfnMaster.id == m_currentConfressionId);
 
-		// 該当のマスタをリストから削除する処理を追加すること（ランダム重複を防ぎたい）
-		m_unansweredIdList.Remove(m_currentConfressionId);
+		// 該当のマスタをリストから削除する処理（ランダム重複を防ぎたい）
+		m_unansweredIdList.RemoveAt(index);
 
+		Debug.Log($"現在のマスタID = {m_currentConfressionId}");
+		Debug.Log($"マスタの残りID : {string.Join(",", m_unansweredIdList)}");
 	}
 
 	/// <summary>「諫める」に対する村民の反応を表示する</summary>
@@ -294,6 +388,7 @@ public class ConfressionManager : MonoBehaviour
 		Invoke("NextConfression", 3.0f);
 	}
 
+	/// <summary>次の懺悔を表示する処理</summary>
 	private void NextConfression()
 	{
 		if (m_isFinishGame == true)
@@ -310,6 +405,34 @@ public class ConfressionManager : MonoBehaviour
 
 		// 懺悔開始状態にする
 		ChangeViewTextUI(ViewUIType.ConfressionStart);
+	}
+
+	/// <summary>エンディング画面に遷移する</summary>
+	private void LoadEnding()
+	{
+        // エンディング種類の分岐処理
+        if (m_endingResultSO.chaosPoint > 0)
+        {
+			// 混沌ポイントが1点以上あったら狂化エンド
+			m_endingResultSO.endingType = EndingType.ChaosEnding;
+        }
+        else if (m_endingResultSO.unorthodoxPoint >= 5)
+        {
+			// 非正統派（ぐうたら）ポイントが一定数以上ならバッドエンド
+			m_endingResultSO.endingType = EndingType.BadEnding;
+        }
+		else if (m_endingResultSO.orthodoxPoint >= 5)
+        {
+			// 正統派ポイントが一定数以上なら正統派エンド
+			m_endingResultSO.endingType = EndingType.BestEnding;
+        }
+        else
+        {
+			// どれにも当てはまらなかったらノーマルエンド
+			m_endingResultSO.endingType = EndingType.NormalEnding;
+        }
+
+		SceneManager.LoadScene("Ending");
 	}
 	#endregion private
 }
