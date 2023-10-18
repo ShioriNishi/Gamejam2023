@@ -21,6 +21,8 @@ public class ConfressionManager : MonoBehaviour
 	private GameObject m_villagerUnorthodoxReactionObject;
 	[SerializeField, Tooltip("村民混沌派返答テキストオブジェクト")]
 	private GameObject m_villagerChaosReactionObject;
+	[SerializeField, Tooltip("時間切れ終了演出用オブジェクト")]
+	private GameObject m_finishObject;
 
 	[SerializeField, Tooltip("諫めるボタン")]
 	private Button m_admonishButton;
@@ -30,12 +32,19 @@ public class ConfressionManager : MonoBehaviour
 	[SerializeField, Tooltip("懺悔マスタ")]
 	private Entity_confression_master m_confressionMasterDao;
 
+	/// <summary>タイマーを司るクラス</summary>
+	[SerializeField, Tooltip("タイマーを司るクラス")]
+	private RemainingTimeManager m_remainingTimeManager;
+
 	/// <summary>正統派ポイント：正しい回答をしたときに貯まるポイント</summary>
 	private int m_orthodoxPoint = 0;
 	/// <summary>非正統派ポイント：間違った回答をしたときに貯まるポイント</summary>
 	private int m_unorthodoxPoint = 0;
 	/// <summary>混沌ポイント：深淵を覗く回答をしたときに貯まるポイント</summary>
 	private int m_chaosPoint = 0;
+
+	/// <summary>ゲームが終了したかの判定フラグ</summary>
+	private bool m_isFinishGame = false;
 
 	/// <summary>現在出題中の懺悔マスタパラメーター</summary>
 	private Entity_confression_master.Param m_confressionMasterParam;
@@ -60,7 +69,7 @@ public class ConfressionManager : MonoBehaviour
 
 		// 村人反応を表示する（3秒後）
 		Invoke("ViewVillagerAdmonishReaction", 3.0f);
-    }
+	}
 	/// <summary>同調ボタン押下時の処理</summary>
 	public void OnClickEmpathizeButton()
 	{
@@ -84,6 +93,7 @@ public class ConfressionManager : MonoBehaviour
 	private void Start()
 	{
 		// 変数初期化処理
+		m_isFinishGame = false;
 		m_currentConfressionId = 0;
 		m_orthodoxPoint = 0;
 		m_unorthodoxPoint = 0;
@@ -105,7 +115,12 @@ public class ConfressionManager : MonoBehaviour
 	// Update is called once per frame
 	private void Update()
 	{
-		// Pointの描画（Updateでやると重いか？）
+		if (m_remainingTimeManager.isTimeover())
+		{
+			// 時間切れ演出
+			ChangeViewTextUI(ViewUIType.GameEnd);
+			m_isFinishGame = true;
+		}
 	}
 
 	/// <summary>引数を元にポイントに加算する処理</summary>
@@ -137,6 +152,7 @@ public class ConfressionManager : MonoBehaviour
 		switch (viewUIType)
 		{
 			case ViewUIType.GameStart:					// ゲーム開始（初期化時）
+				m_finishObject.SetActive(false);		// 終了オブジェクトは隠す
 				m_sisterThinkingObject.SetActive(false);
 				m_sisterAnswerObject.SetActive(false);
 				m_villagerOrthodoxReactionObject.SetActive(false);
@@ -150,6 +166,8 @@ public class ConfressionManager : MonoBehaviour
 				m_villagerOrthodoxReactionObject.SetActive(false);
 				m_villagerUnorthodoxReactionObject.SetActive(false);
 				m_villagerChaosReactionObject.SetActive(false);
+				m_admonishButton.interactable = true;	// ボタンは押せるようにする
+				m_empathizeButton.interactable = true;
 				break;
 
 			case ViewUIType.SisterAdmonish:				// シスター諫める		// シスター回答自体はどのパターンでも演出一緒
@@ -185,6 +203,12 @@ public class ConfressionManager : MonoBehaviour
 				m_villagerChaosReactionObject.SetActive(true);	// 混沌派反応の吹き出しを表示する
 				break;
 
+			case ViewUIType.GameEnd:					// ゲーム終了時（時間切れ終了）
+				m_finishObject.SetActive(true);			// 終了演出だけ表示する、他の状態は隠さない
+				m_admonishButton.interactable = false;	// ボタンは押せなくする
+				m_empathizeButton.interactable = false;
+				break;
+
 			default:
 				break;
 		}
@@ -208,33 +232,33 @@ public class ConfressionManager : MonoBehaviour
 		PointType admonishPointType = (PointType)m_confressionMasterParam.admonish_point_type;
 
 		// UIをポイント種別に合わせて出し分ける
-        switch (admonishPointType)
-        {
-            case PointType.Orthodox:	// 諫めるが正統派回答だった場合
+		switch (admonishPointType)
+		{
+			case PointType.Orthodox:	// 諫めるが正統派回答だった場合
 				m_villagerOrthodoxReactionObject.transform.Find("VillagerReactionText").GetComponent<TextMeshProUGUI>().text = m_confressionMasterParam.villager_admonish_text;
 				ChangeViewTextUI(ViewUIType.VillagerOrthodoxReaction);
-                break;
+				break;
 
-            case PointType.Unorthodox:  // 諫めるが非正統派回答だった場合
+			case PointType.Unorthodox:  // 諫めるが非正統派回答だった場合
 				m_villagerUnorthodoxReactionObject.transform.Find("VillagerReactionText").GetComponent<TextMeshProUGUI>().text = m_confressionMasterParam.villager_admonish_text;
 				ChangeViewTextUI(ViewUIType.VillagerUnorthodoxReaction);
-                break;
+				break;
 
-            case PointType.Chaos:		// 諫めるが混沌派回答だった場合
+			case PointType.Chaos:		// 諫めるが混沌派回答だった場合
 				m_villagerChaosReactionObject.transform.Find("VillagerReactionText").GetComponent<TextMeshProUGUI>().text = m_confressionMasterParam.villager_admonish_text;
 				ChangeViewTextUI(ViewUIType.VillagerChaosReaction);
-                break;
+				break;
 
-            default:
-                break;
-        }
+			default:
+				break;
+		}
 
 		// 村民反応漫符を出す
 
 
 		// 次の懺悔を出す
 		Invoke("NextConfression", 3.0f);
-    }
+	}
 
 	/// <summary>「同調」に対する村人の反応を表示する</summary>
 	private void ViewVillagerEmpathizeReaction()
@@ -242,44 +266,50 @@ public class ConfressionManager : MonoBehaviour
 		// 回答結果の反映ポイント種別を抽出する
 		PointType empathizePointType = (PointType)m_confressionMasterParam.empathize_point_type;
 
-        // UIをポイント種別に合わせて出し分ける
-        switch (empathizePointType)
-        {
-            case PointType.Orthodox:    // 同調が正統派回答だった場合
+		// UIをポイント種別に合わせて出し分ける
+		switch (empathizePointType)
+		{
+			case PointType.Orthodox:    // 同調が正統派回答だった場合
 				m_villagerOrthodoxReactionObject.transform.Find("VillagerReactionText").GetComponent<TextMeshProUGUI>().text = m_confressionMasterParam.villager_empathize_text;
 				ChangeViewTextUI(ViewUIType.VillagerOrthodoxReaction);
-                break;
+				break;
 
-            case PointType.Unorthodox:  // 同調が非正統派回答だった場合
+			case PointType.Unorthodox:  // 同調が非正統派回答だった場合
 				m_villagerUnorthodoxReactionObject.transform.Find("VillagerReactionText").GetComponent<TextMeshProUGUI>().text = m_confressionMasterParam.villager_empathize_text;
 				ChangeViewTextUI(ViewUIType.VillagerUnorthodoxReaction);
-                break;
+				break;
 
-            case PointType.Chaos:		// 同調が混沌派回答だった場合
+			case PointType.Chaos:		// 同調が混沌派回答だった場合
 				m_villagerChaosReactionObject.transform.Find("VillagerReactionText").GetComponent<TextMeshProUGUI>().text = m_confressionMasterParam.villager_empathize_text;
 				ChangeViewTextUI(ViewUIType.VillagerChaosReaction);
-                break;
+				break;
 
-            default:
-                break;
-        }
+			default:
+				break;
+		}
 
-        // 村民反応漫符を出す
+		// 村民反応漫符を出す
 
-        // 次の懺悔を出す
-        Invoke("NextConfression", 3.0f);
-    }
+		// 次の懺悔を出す
+		Invoke("NextConfression", 3.0f);
+	}
 
-    private void NextConfression()
+	private void NextConfression()
 	{
-        // 最初のマスタを決める処理
-        LotteryCurrentConfressionId();
+		if (m_isFinishGame == true)
+		{
+			// ゲーム終了フラグが有効な場合は次の懺悔を出さない
+			return;
+		}
 
-        // 文言を抽出する処理
-        m_villagerConfressionText.text = m_confressionMasterParam.villager_confression_text;
+		// 最初のマスタを決める処理
+		LotteryCurrentConfressionId();
 
-        // 懺悔開始状態にする
-        ChangeViewTextUI(ViewUIType.ConfressionStart);
-    }
-    #endregion private
+		// 文言を抽出する処理
+		m_villagerConfressionText.text = m_confressionMasterParam.villager_confression_text;
+
+		// 懺悔開始状態にする
+		ChangeViewTextUI(ViewUIType.ConfressionStart);
+	}
+	#endregion private
 }

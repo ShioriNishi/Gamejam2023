@@ -37,5 +37,7 @@ namespace Confression.Defines
 		/// <summary>‘ºl¬“×”h”½‰</summary>
 		VillagerChaosReaction,
 
+		/// <summary>ƒQ[ƒ€I—¹</summary>
+		GameEnd,
 	}
 }
