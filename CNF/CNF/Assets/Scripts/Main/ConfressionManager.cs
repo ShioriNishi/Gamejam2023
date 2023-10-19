@@ -33,6 +33,9 @@ public class ConfressionManager : MonoBehaviour
 	[SerializeField, Tooltip("混沌派ポイント表示テキスト")]
 	private TextMeshProUGUI m_meterChaosText;
 
+	[SerializeField, Tooltip("表示する漫符のリスト")]
+	private GameObject[] m_mangaMarkList = new GameObject[6];
+
 	[SerializeField, Tooltip("諫めるボタン")]
 	private Button m_admonishButton;
 	[SerializeField, Tooltip("同調ボタン")]
@@ -231,8 +234,7 @@ public class ConfressionManager : MonoBehaviour
 				Debug.LogWarning("どこにも加算されませんでした！要確認 PointType = " + type);
 				break;
 		}
-
-		Debug.Log($"正統派ポイント = {m_orthodoxPoint} , ぐうたらポイント = {m_unorthodoxPoint} , 混沌ポイント = {m_chaosPoint}");
+		//Debug.Log($"正統派ポイント = {m_orthodoxPoint} , ぐうたらポイント = {m_unorthodoxPoint} , 混沌ポイント = {m_chaosPoint}");
 
 		m_endingResultSO.orthodoxPoint = m_orthodoxPoint;
 		m_endingResultSO.unorthodoxPoint = m_unorthodoxPoint;
@@ -265,8 +267,9 @@ public class ConfressionManager : MonoBehaviour
 				m_villagerOrthodoxReactionObject.SetActive(false);
 				m_villagerUnorthodoxReactionObject.SetActive(false);
 				m_villagerChaosReactionObject.SetActive(false);
-				//m_admonishButton.interactable = true;	// ボタンは押せるようにする
-				//m_empathizeButton.interactable = true;
+				m_admonishButton.interactable = true;   // ボタンは押せるようにする
+				m_empathizeButton.interactable = true;
+				ViewVillagerMangaMark(MangaMark.None);
 				break;
 
 			case ViewUIType.SisterAdmonish:				// シスター諫める		// シスター回答自体はどのパターンでも演出一緒
@@ -276,6 +279,8 @@ public class ConfressionManager : MonoBehaviour
 				m_villagerOrthodoxReactionObject.SetActive(false);
 				m_villagerUnorthodoxReactionObject.SetActive(false);
 				m_villagerChaosReactionObject.SetActive(false);
+				m_admonishButton.interactable = false;  // ボタンは押せなくする
+				m_empathizeButton.interactable = false;
 				break;
 
 			case ViewUIType.VillagerOrthodoxReaction:   // 村民正統派反応
@@ -304,9 +309,9 @@ public class ConfressionManager : MonoBehaviour
 
 			case ViewUIType.GameEnd:                    // ゲーム終了時（時間切れ終了）
 				m_fadeObject.SetActive(true);		// フェード用パネルは表示する
-				m_finishObject.SetActive(true);			// 終了演出だけ表示する、他の状態は隠さない
-				//m_admonishButton.interactable = false;	// ボタンは押せなくする
-				//m_empathizeButton.interactable = false;
+				m_finishObject.SetActive(true);         // 終了演出だけ表示する、他の状態は隠さない
+				m_admonishButton.interactable = false;  // ボタンは押せなくする
+				m_empathizeButton.interactable = false;
 				break;
 
 			default:
@@ -358,7 +363,9 @@ public class ConfressionManager : MonoBehaviour
 		}
 
 		// 村民反応漫符を出す
-
+		MangaMark villagerMangaMark = (MangaMark)m_confressionMasterParam.villager_admonish_manga_mark;
+		ViewVillagerMangaMark(villagerMangaMark);
+		Debug.Log($"現在の村人の反応漫符 = {villagerMangaMark}");
 
 		// 次の懺悔を出す
 		Invoke("NextConfression", 3.0f);
@@ -393,9 +400,30 @@ public class ConfressionManager : MonoBehaviour
 		}
 
 		// 村民反応漫符を出す
+		MangaMark villagerMangaMark = (MangaMark)m_confressionMasterParam.villager_empathize_manga_mark;
+		ViewVillagerMangaMark(villagerMangaMark);
+		Debug.Log($"現在の村人の反応漫符 = {villagerMangaMark}");
 
 		// 次の懺悔を出す
 		Invoke("NextConfression", 3.0f);
+	}
+
+	/// <summary>村民の漫符を表示する</summary>
+	/// <param name="mangaMark">表示対象漫符</param>
+	private void ViewVillagerMangaMark(MangaMark mangaMark)
+	{
+		for (int i = 0; i < m_mangaMarkList.Length; i++)
+		{
+			// 表示対象漫符なら表示する
+			if (i + 1 == (int)mangaMark)
+			{
+				m_mangaMarkList[i].SetActive(true);
+			}
+			else
+			{
+				m_mangaMarkList[i].SetActive(false);
+			}
+		}
 	}
 
 	/// <summary>次の懺悔を表示する処理</summary>

@@ -2,6 +2,7 @@
 
 namespace Confression.Defines
 {
+	/// <summary>加算ポイント種別</summary>
 	public enum PointType
 	{
 		/// <summary>正統派ポイント</summary>
@@ -12,11 +13,26 @@ namespace Confression.Defines
 		Chaos,
 	}
 
+	/// <summary>村民反応漫符</summary>
 	public enum MangaMark
 	{
-
+		/// <summary>表示なし</summary>
+		None = 0,
+		/// <summary>ハート</summary>
+		Love = 1,
+		/// <summary>イライラ</summary>
+		Angry,
+		/// <summary>ぐるぐる</summary>
+		Confused,
+		/// <summary>汗</summary>
+		Sweat,
+		/// <summary>びっくり</summary>
+		Surprised,
+		/// <summary>わいわい</summary>
+		Enlighted,
 	}
 
+	/// <summary>UI表示タイプ（どのタイミングで出すUIか）</summary>
 	public enum ViewUIType
 	{
 		/// <summary>ゲーム開始</summary>

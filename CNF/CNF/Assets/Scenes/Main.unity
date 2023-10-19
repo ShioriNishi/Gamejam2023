@@ -949,6 +949,13 @@ MonoBehaviour:
   m_meterOrthodoxText: {fileID: 2001504307}
   m_meterUnorthodoxText: {fileID: 1589496141}
   m_meterChaosText: {fileID: 2010663318}
+  m_mangaMarkList:
+  - {fileID: 229624956}
+  - {fileID: 1501531851}
+  - {fileID: 1220172233}
+  - {fileID: 997296072}
+  - {fileID: 590280005}
+  - {fileID: 851730959}
   m_admonishButton: {fileID: 204387267}
   m_empathizeButton: {fileID: 1613278906}
   m_confressionMasterDao: {fileID: 11400000, guid: 2ade0362bf3c07c4ca41fcd979331f60, type: 2}
