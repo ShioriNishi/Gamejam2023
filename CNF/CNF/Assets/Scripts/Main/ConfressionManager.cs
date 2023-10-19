@@ -26,6 +26,13 @@ public class ConfressionManager : MonoBehaviour
 	[SerializeField, Tooltip("時間切れ終了演出用オブジェクト")]
 	private GameObject m_finishObject;
 
+	[SerializeField, Tooltip("正統派ポイント表示テキスト")]
+	private TextMeshProUGUI m_meterOrthodoxText;
+	[SerializeField, Tooltip("非正統派ポイント表示テキスト")]
+	private TextMeshProUGUI m_meterUnorthodoxText;
+	[SerializeField, Tooltip("混沌派ポイント表示テキスト")]
+	private TextMeshProUGUI m_meterChaosText;
+
 	[SerializeField, Tooltip("諫めるボタン")]
 	private Button m_admonishButton;
 	[SerializeField, Tooltip("同調ボタン")]
@@ -232,6 +239,9 @@ public class ConfressionManager : MonoBehaviour
 		m_endingResultSO.chaosPoint = m_chaosPoint;
 
 		// ポイントUIの更新
+		m_meterOrthodoxText.text = m_orthodoxPoint.ToString();
+		m_meterUnorthodoxText.text = m_unorthodoxPoint.ToString();
+		m_meterChaosText.text = m_chaosPoint.ToString();
 	}
 
 	/// <summary>定数で指定された種類に合わせて表示するTextUIを変える処理</summary>
@@ -410,27 +420,27 @@ public class ConfressionManager : MonoBehaviour
 	/// <summary>エンディング画面に遷移する</summary>
 	private void LoadEnding()
 	{
-        // エンディング種類の分岐処理
-        if (m_endingResultSO.chaosPoint > 0)
-        {
+		// エンディング種類の分岐処理
+		if (m_endingResultSO.chaosPoint > 0)
+		{
 			// 混沌ポイントが1点以上あったら狂化エンド
 			m_endingResultSO.endingType = EndingType.ChaosEnding;
-        }
-        else if (m_endingResultSO.unorthodoxPoint >= 5)
-        {
+		}
+		else if (m_endingResultSO.unorthodoxPoint >= 5)
+		{
 			// 非正統派（ぐうたら）ポイントが一定数以上ならバッドエンド
 			m_endingResultSO.endingType = EndingType.BadEnding;
-        }
+		}
 		else if (m_endingResultSO.orthodoxPoint >= 5)
-        {
+		{
 			// 正統派ポイントが一定数以上なら正統派エンド
 			m_endingResultSO.endingType = EndingType.BestEnding;
-        }
-        else
-        {
+		}
+		else
+		{
 			// どれにも当てはまらなかったらノーマルエンド
 			m_endingResultSO.endingType = EndingType.NormalEnding;
-        }
+		}
 
 		SceneManager.LoadScene("Ending");
 	}
