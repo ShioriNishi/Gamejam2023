@@ -32,7 +32,7 @@ public class ChangeScene : MonoBehaviour
     {
         while (!isSceneChange)
         {
-            PanelColor.a += 0.02f;
+            PanelColor.a += 0.01f;
             _PanelImage.color = PanelColor;
             if (PanelColor.a >= 1)
                 isSceneChange = true;
