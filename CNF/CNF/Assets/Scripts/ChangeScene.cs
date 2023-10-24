@@ -40,4 +40,9 @@ public class ChangeScene : MonoBehaviour
         }
         SceneManager.LoadScene("Main");
     }
+
+    public void change_button()
+    {
+        SceneManager.LoadScene("TitleScene");
+    }
 }

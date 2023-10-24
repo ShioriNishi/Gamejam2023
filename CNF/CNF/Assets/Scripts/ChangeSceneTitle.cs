@@ -9,6 +9,15 @@ public void OnClickStartButton()
     {
         SceneManager.LoadScene("Prologue");
     }
- 
+
+//ゲーム終了
+public void ExitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;//ゲームプレイ終了
+#else
+    Application.Quit();//ゲームプレイ終了
+#endif
+  }
 }
-   
+
