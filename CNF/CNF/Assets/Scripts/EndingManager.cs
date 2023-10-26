@@ -40,7 +40,7 @@ public class EndingManager : MonoBehaviour
 	// [SerializeField, Tooltip("ノーマルエンド表示用AudioClip")]
 	// private AudioClip m_normalEndingAudioClip;
 
-    [SerializeField, Tooltip("狂化エンド表示用画像オブジェクト")]
+	[SerializeField, Tooltip("狂化エンド表示用画像オブジェクト")]
 	private GameObject m_chaosEndingImageObject;
 	[SerializeField, Tooltip("狂化エンド表示用文言オブジェクト")]
 	private GameObject m_chaosEndingTextObject;
@@ -60,12 +60,12 @@ public class EndingManager : MonoBehaviour
 		Debug.Log($"EndingType = {m_endingResultSO.endingType}");
 
 		// BGMの設定
-        // m_bestEndingAudioSource.clip = m_bestEndingAudioClip;
+		// m_bestEndingAudioSource.clip = m_bestEndingAudioClip;
 		// m_badEndingAudioSource.clip = m_badEndingAudioClip;
 		// m_normalEndingAudioSource.clip = m_normalEndingAudioClip;
 		// m_chaosEndingAudioSource.clip = m_chaosEndingAudioClip;
 
-        ViewEnding(m_endingResultSO.endingType);
+		ViewEnding(m_endingResultSO.endingType);
 	}
 
 	// Update is called once per frame
@@ -77,40 +77,44 @@ public class EndingManager : MonoBehaviour
 	private void ViewEnding(EndingType endingType)
 	{
 		// 全Endingを一旦非表示にする
-		//m_bestEndingImageObject.SetActive(false);
+		m_bestEndingImageObject.SetActive(false);
 		m_bestEndingTextObject.SetActive(false);
-		//m_badEndingImageObject.SetActive(false);
+		m_badEndingImageObject.SetActive(false);
 		m_badEndingTextObject.SetActive(false);
-		//m_normalEndingImageObject.SetActive(false);
+		m_normalEndingImageObject.SetActive(false);
 		m_normalEndingTextObject.SetActive(false);
-		//m_chaosEndingImageObject.SetActive(false);
+		m_chaosEndingImageObject.SetActive(false);
 		m_chaosEndingTextObject.SetActive(false);
 
-        switch (endingType)
-        {
-            case EndingType.BestEnding:		// ベストエンド表示
+		switch (endingType)
+		{
+			case EndingType.BestEnding:     // ベストエンド表示
+				m_bestEndingImageObject.SetActive(true);
 				m_bestEndingTextObject.SetActive(true);
-                m_bestEndingAudioSource.Play();
-                break;
+				m_bestEndingAudioSource.Play();
+				break;
 
-            case EndingType.BadEnding:      // バッドエンド表示
+			case EndingType.BadEnding:      // バッドエンド表示
+				m_badEndingImageObject.SetActive(true);
 				m_badEndingTextObject.SetActive(true);
 				m_badEndingAudioSource.Play();
-                break;
+				break;
 
-            case EndingType.NormalEnding:   // ノーマルエンド表示
+			case EndingType.NormalEnding:   // ノーマルエンド表示
+				m_normalEndingImageObject.SetActive(true);
 				m_normalEndingTextObject.SetActive(true);
 				m_normalEndingAudioSource.Play();
-                break;
+				break;
 
-            case EndingType.ChaosEnding:    // 狂化エンド表示
+			case EndingType.ChaosEnding:    // 狂化エンド表示
+				m_chaosEndingImageObject.SetActive(true);
 				m_chaosEndingTextObject.SetActive(true);
 				m_chaosEndingAudioSource.Play();
-                break;
+				break;
 
-            default:
-                break;
-        }
-    }
+			default:
+				break;
+		}
+	}
 	#endregion private
 }
