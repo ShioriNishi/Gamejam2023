@@ -61,13 +61,15 @@ public class confression_master_importer : AssetPostprocessor
 					cell = row.GetCell(0); p.id = (int)(cell == null ? 0 : cell.NumericCellValue);
 					cell = row.GetCell(1); p.villager_confression_text = (cell == null ? "" : cell.StringCellValue);
 					cell = row.GetCell(2); p.sister_empathize_text = (cell == null ? "" : cell.StringCellValue);
-					cell = row.GetCell(3); p.empathize_point_type = (int)(cell == null ? 0 : cell.NumericCellValue);
-					cell = row.GetCell(4); p.sister_admonish_text = (cell == null ? "" : cell.StringCellValue);
-					cell = row.GetCell(5); p.admonish_point_type = (int)(cell == null ? 0 : cell.NumericCellValue);
-					cell = row.GetCell(6); p.villager_empathize_text = (cell == null ? "" : cell.StringCellValue);
-					cell = row.GetCell(7); p.villager_empathize_manga_mark = (int)(cell == null ? 0 : cell.NumericCellValue);
-					cell = row.GetCell(8); p.villager_admonish_text = (cell == null ? "" : cell.StringCellValue);
-					cell = row.GetCell(9); p.villager_admonish_manga_mark = (int)(cell == null ? 0 : cell.NumericCellValue);
+					cell = row.GetCell(3); p.sister_empathize_expression = (int)(cell == null ? 0 : cell.NumericCellValue);
+					cell = row.GetCell(4); p.empathize_point_type = (int)(cell == null ? 0 : cell.NumericCellValue);
+					cell = row.GetCell(5); p.sister_admonish_text = (cell == null ? "" : cell.StringCellValue);
+					cell = row.GetCell(6); p.sister_admonish_expression = (int)(cell == null ? 0 : cell.NumericCellValue);
+					cell = row.GetCell(7); p.admonish_point_type = (int)(cell == null ? 0 : cell.NumericCellValue);
+					cell = row.GetCell(8); p.villager_empathize_text = (cell == null ? "" : cell.StringCellValue);
+					cell = row.GetCell(9); p.villager_empathize_manga_mark = (int)(cell == null ? 0 : cell.NumericCellValue);
+					cell = row.GetCell(10); p.villager_admonish_text = (cell == null ? "" : cell.StringCellValue);
+					cell = row.GetCell(11); p.villager_admonish_manga_mark = (int)(cell == null ? 0 : cell.NumericCellValue);
 
                         data.param.Add(p);
                     }
