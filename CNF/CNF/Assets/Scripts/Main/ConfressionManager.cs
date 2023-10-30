@@ -33,6 +33,8 @@ public class ConfressionManager : MonoBehaviour
 	[SerializeField, Tooltip("混沌派ポイント表示テキスト")]
 	private TextMeshProUGUI m_meterChaosText;
 
+	[SerializeField, Tooltip("表示するシスター表情差分リスト")]
+	private GameObject[] m_sisterExpressionList = new GameObject[10];
 	[SerializeField, Tooltip("表示する漫符のリスト")]
 	private GameObject[] m_mangaMarkList = new GameObject[6];
 
@@ -110,6 +112,7 @@ public class ConfressionManager : MonoBehaviour
 
 		// シスター回答文言表示
 		m_sisterAnswerObject.transform.Find("SisterAnswerText").GetComponent<TextMeshProUGUI>().text = m_confressionMasterParam.sister_admonish_text;
+		ViewSisterExpression((Expression)m_confressionMasterParam.sister_admonish_expression);
 		ChangeViewTextUI(ViewUIType.SisterAdmonish);
 
 		// 村人反応を表示する（3秒後）
@@ -124,6 +127,7 @@ public class ConfressionManager : MonoBehaviour
 
 		// シスター回答文言表示
 		m_sisterAnswerObject.transform.Find("SisterAnswerText").GetComponent<TextMeshProUGUI>().text = m_confressionMasterParam.sister_empathize_text;
+		ViewSisterExpression((Expression)m_confressionMasterParam.sister_empathize_expression);
 		ChangeViewTextUI(ViewUIType.SisterEmpathize);
 
 		// 村人反応を表示する（3秒後）
@@ -269,6 +273,7 @@ public class ConfressionManager : MonoBehaviour
 				m_villagerChaosReactionObject.SetActive(false);
 				m_admonishButton.interactable = true;   // ボタンは押せるようにする
 				m_empathizeButton.interactable = true;
+				ViewSisterExpression(Expression.Normal);
 				ViewVillagerMangaMark(MangaMark.None);
 				break;
 
@@ -316,6 +321,24 @@ public class ConfressionManager : MonoBehaviour
 
 			default:
 				break;
+		}
+	}
+
+	/// <summary>シスター表情を表示する</summary>
+	/// <param name="expression">表示対象表情</param>
+	private void ViewSisterExpression(Expression expression)
+	{
+		for (int i = 0; i < m_sisterExpressionList.Length; i++)
+		{
+			// 表示対象表情なら表示する
+			if (i + 1 == (int)expression)
+			{
+				m_sisterExpressionList[i].SetActive(true);
+			}
+			else
+			{
+				m_sisterExpressionList[i].SetActive(false);
+			}
 		}
 	}
 

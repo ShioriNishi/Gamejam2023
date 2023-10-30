@@ -13,6 +13,33 @@ namespace Confression.Defines
 		Chaos,
 	}
 
+	/// <summary>シスター表情</summary>
+	public enum Expression
+	{
+		/// <summary>表示なし、未使用想定</summary>
+		None = 0,
+		/// <summary>怒り</summary>
+		Angry = 1,
+		/// <summary>暗い顔、企み顔</summary>
+		Dark,
+		/// <summary>ドヤ顔</summary>
+		Doya,
+		/// <summary>グル目</summary>
+		Gurume,
+		/// <summary>アイドル状態</summary>
+		Idle,
+		/// <summary>ノーマル※Idleと同義か？</summary>
+		Normal,
+		/// <summary>困り顔、涙目</summary>
+		Oops,
+		/// <summary>パニック</summary>
+		Panic,
+		/// <summary>笑顔1（目開き）</summary>
+		Smile01,
+		/// <summary>笑顔2（目閉じ）</summary>
+		Smile02,
+	}
+
 	/// <summary>村民反応漫符</summary>
 	public enum MangaMark
 	{
